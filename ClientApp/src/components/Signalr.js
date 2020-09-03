@@ -16,13 +16,54 @@ export const Signalr = () => {
         setList([...list, message]);
         setDate(new Date());
       });
-    }, [list]);
+    }, []);
 
     const content = () =>
       list.map((message, index) => <p key={index}>{message}</p>);
-    console.log(list);
+
     return <>{content()}</>;
   };
 
-  return <Messages hubConnection={hubConnection} />;
+  return (
+    <>
+      <Messages hubConnection={hubConnection} />
+      <SendMessage />
+    </>
+  );
+};
+
+const SendMessage = () => {
+  const [message, setMessage] = useState("");
+
+  const onChange = (e) => {
+    if (e && e.target) {
+      setMessage(e.target.value);
+    }
+  };
+
+  const onSend = (e) => {
+    fetch("/api/message", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Message: message,
+      }),
+    });
+    setMessage(" ");
+  };
+
+  return (
+    <>
+      {" "}
+      <label>Enter your message</label>{" "}
+      <input type="text" onChange={onChange} value={message} />{" "}
+      <button type="button" onClick={onSend}>
+        {" "}
+        Send{" "}
+      </button>
+    </>
+  );
 };
